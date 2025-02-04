@@ -9,9 +9,13 @@ const port = process.env.PORT;
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-
 app.use(
-  cors({ origin: "https://deploy-mern-1whq.vercel.app", credentials: true })
+  cors({
+    origin: "https://auth-frontendd.vercel.app",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 );
 
 app.use("/api/auth", authRoutes);
