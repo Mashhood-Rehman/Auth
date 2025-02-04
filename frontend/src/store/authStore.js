@@ -1,7 +1,7 @@
 import axios from "axios";
 import { create } from "zustand";
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = "auth-seven-kappa.vercel.app/api/auth";
 axios.defaults.withCredentials = true;
 export const useAuthStore = create((set) => ({
   user: null,
