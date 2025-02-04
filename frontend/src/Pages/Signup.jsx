@@ -1,0 +1,112 @@
+import { motion } from "framer-motion";
+import Input from "../components/Input";
+import { Loader, Lock, Mail, User } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
+import { useAuthStore } from "../store/authStore";
+
+const Signup = () => {
+  const { signup, error, isLoading } = useAuthStore();
+  const [Data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData({ ...Data, [name]: value });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await signup(Data);
+      navigate("/verifyemail");
+    } catch (error) {
+      console.error(error);
+      if (error.response?.data?.message) {
+        error(error.response.data.message);
+      } else {
+        error("An unexpected error occurred. Please try again.");
+      }
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className=" max-w-md w-full bg-gray-800 opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden"
+    >
+      <div className="p-8 ">
+        <h2 className="text-3xl  font-bold mb-6 text-center  bg-gradient-to-r from-green-400 to-emerald-500 text-transparent  bg-clip-text">
+          Create Account
+        </h2>
+
+        <form onSubmit={handleSubmit}>
+          <Input
+            name="name"
+            icon={User}
+            type="text"
+            placeholder="Full Name"
+            value={Data.name}
+            onChange={handleChange}
+          />
+          <Input
+            name="email"
+            icon={Mail}
+            type="email"
+            placeholder=" Email"
+            value={Data.email}
+            onChange={handleChange}
+          />
+          <Input
+            name="password"
+            icon={Lock}
+            type="password"
+            placeholder="Password"
+            value={Data.password}
+            onChange={handleChange}
+          />
+          {error && typeof error === "string" && (
+            <p className=" text-red-500 font-semibold mt-2">{error}</p>
+          )}
+
+          <PasswordStrengthMeter password={Data.password} />
+          <motion.button
+            className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white 
+						font-bold rounded-lg shadow-lg hover:from-green-600
+						hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
+						 focus:ring-offset-gray-900 transition duration-200"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            disabled={isLoading}
+          >
+            {" "}
+            {isLoading ? (
+              <Loader className=" animate-spin mx-auto" size={24} />
+            ) : (
+              "Sign up"
+            )}
+          </motion.button>
+        </form>
+      </div>
+
+      <div className=" px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center ">
+        <p className=" text-sm text-gray-100">
+          Already Have an account{" "}
+          <Link to="/login" className=" text-green-400 hover:underline">
+            {" "}
+            Login{" "}
+          </Link>
+        </p>
+      </div>
+    </motion.div>
+  );
+};
+
+export default Signup;
