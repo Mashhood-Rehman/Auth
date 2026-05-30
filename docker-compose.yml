@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+ frontend:
+  build:
+   context: .
+   dockerfile: DockerFile
+  ports:
+   - "3000:3000"
+  environment:
+   - DATABASE_URL='postgres://postgres:1234@localhost:5432/Authentication'
+   - JWT_SECRET_KEY=1234566531
+   -  CLOUDINARY_CLOUD_NAME=drirmbeo0
+   - CLOUDINARY_API_KEY=833523562792943
+   - CLOUDINARY_API_SECRET=UYF1_V8qtnlkpM4dVYPjw21Hjm4
+  depends_on:
+   - backend
+
+
+ backend:
+   build:
+    context: .
+    dockerfile: DockerFile
+   ports:
+    - "4000:4000"

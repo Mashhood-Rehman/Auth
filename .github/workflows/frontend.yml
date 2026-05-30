@@ -1,0 +1,56 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+       - 'app/**'
+       - 'prisma/**'
+       - 'public/**'
+       - 'bun.lock'
+       - 'next.config.ts'
+       - 'tsconfig.json'
+       - '.github/workflows/frontend.yml' 
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'prisma/**'
+      - 'public/**'
+      - 'package.json'
+      - 'bun.lock'
+      - 'next.config.ts'
+      - 'tsconfig.json'
+      - '.github/workflows/frontend.yml'
+jobs:
+   build-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: Checkout code
+       uses: actions/checkout@v4
+
+     - name: Set up Node.js
+       uses: actions/setup-node@v4
+       with:
+        node-version: '20'
+     - name: Setup Bun
+       run: oven-sh/setup-bun@v2
+       with:
+        bun-version: latest
+     - name: Install Dependencies
+       run: bun install --frozen-lockfile
+
+     - name: Generate Prisma Client
+       run: bunx prisma generate
+     - name: Build Next.js App
+       run: bun run build
+     - name: Setup Docker Buildx
+       uses: docker/setup-buildx-action@v3  
+     - name: Build Docker Image
+       uses: docker/build-push-action@v3
+       with:
+        context: .
+        file: ./DockerFile
+        push: false
+        tags: frontend-app:latest
